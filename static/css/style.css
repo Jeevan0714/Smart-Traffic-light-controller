@@ -1,0 +1,411 @@
+/* ======================================
+   MIDNIGHT TECH THEME (V2)
+====================================== */
+:root {
+    --bg:          #0f172a; /* Deep Navy */
+    --surface:     rgba(30, 41, 59, 0.7); /* Glass Card */
+    --surface-solid:#1e293b;
+    --border:      rgba(255, 255, 255, 0.1);
+    --accent:      #3b82f6; /* Electric Blue */
+    --accent-glow: rgba(59, 130, 246, 0.5);
+
+    --red:         #ef4444; /* Neon Red */
+    --yellow:      #eab308; /* Neon Yellow */
+    --green:       #22c55e; /* Neon Green */
+    --muted:       #94a3b8;
+
+    --text-h:      #f8fafc;
+    --text-b:      #cbd5e1;
+
+    --shadow-md:   0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --radius:      16px;
+    --radius-sm:   10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg);
+    background-image: 
+        radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.05) 0%, transparent 50%);
+    color: var(--text-b);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism utility */
+.glass {
+    background: var(--surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+}
+
+/* ======================================
+   APP LAYOUT
+====================================== */
+.app-wrapper {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ======================================
+   HEADER
+====================================== */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.logo-badge {
+    width: 40px;
+    height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.header h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-h);
+    letter-spacing: -0.5px;
+}
+.header h1 span { color: var(--accent); }
+
+.system-status {
+    display: flex;
+    gap: 1rem;
+}
+
+.status-chip {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot-green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.dot-red { background: var(--red); box-shadow: 0 0 8px var(--red); }
+
+/* ======================================
+   DASHBOARD GRID
+====================================== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+/* ======================================
+   MONITOR SECTION (LEFT)
+====================================== */
+.monitor-card {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+#videoStream {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* HUD Overlay */
+.hud-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
+}
+
+.hud-corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--accent);
+}
+.c-tl { top: 15px; left: 15px; border-right: 0; border-bottom: 0; }
+.c-tr { top: 15px; right: 15px; border-left: 0; border-bottom: 0; }
+.c-bl { bottom: 15px; left: 15px; border-right: 0; border-top: 0; }
+.c-br { bottom: 15px; right: 15px; border-left: 0; border-top: 0; }
+
+.scanline {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 8px var(--accent);
+    animation: scan 4s linear infinite;
+}
+@keyframes scan {
+    0% { top: 0%; }
+    100% { top: 100%; }
+}
+
+/* ======================================
+   STATUS PANEL (RIGHT)
+====================================== */
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Signal Status */
+.signal-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 1rem 0;
+}
+
+.traffic-light {
+    background: #0f172a;
+    padding: 12px;
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 2px solid var(--border);
+}
+
+.light {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #1e293b;
+    transition: all 0.3s ease;
+}
+
+.light-red.active    { background: var(--red); box-shadow: 0 0 25px var(--red); }
+.light-yellow.active { background: var(--yellow); box-shadow: 0 0 25px var(--yellow); }
+.light-green.active  { background: var(--green); box-shadow: 0 0 25px var(--green); }
+
+.signal-info { text-align: left; flex: 1; margin-left: 2rem; }
+#status-text { font-size: 2rem; font-weight: 800; color: var(--text-h); }
+#signal-sub { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
+
+/* Ambulance Alert */
+.ambulance-card.amb-active {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    animation: pulse-bg 2s infinite;
+}
+@keyframes pulse-bg {
+    0%, 100% { background: rgba(239, 68, 68, 0.1); }
+    50% { background: rgba(239, 68, 68, 0.2); }
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.alert-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    border: 2px solid var(--border);
+}
+.amb-active .alert-icon {
+    border-color: var(--red);
+    color: var(--red);
+    box-shadow: 0 0 15px var(--red);
+}
+
+/* ESP32 Controls */
+.control-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--text-h);
+    padding: 0.8rem;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+.btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+.btn-move:hover { border-color: var(--green); color: var(--green); }
+.btn-stop:hover { border-color: var(--red); color: var(--red); }
+.btn-primary { background: var(--accent); border: none; }
+.btn-primary:hover { background: #2563eb; box-shadow: 0 0 15px var(--accent-glow); }
+
+/* Stats/Hardware Row */
+.hw-row {
+    display: flex;
+    gap: 0.8rem;
+    margin: 1rem 0;
+}
+.hw-item {
+    flex: 1;
+    background: #0f172a;
+    padding: 0.6rem;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    transition: all 0.3s ease;
+}
+.hw-item.hw-on { color: var(--green); border-color: var(--green); background: rgba(34, 197, 94, 0.1); }
+.hw-item.hw-on-red { color: var(--red); border-color: var(--red); background: rgba(239, 68, 68, 0.1); }
+
+/* ======================================
+   SETTINGS PANEL
+====================================== */
+.settings-section {
+    margin-top: 1rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.input-group label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+
+input {
+    background: #0f172a;
+    border: 1px solid var(--border);
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-h);
+    font-family: inherit;
+    outline: none;
+}
+input:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+
+/* ======================================
+   INFO BAR
+====================================== */
+.info-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+.info-box {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.info-box i { font-size: 1.4rem; }
+.info-box span { font-size: 0.8rem; font-weight: 500; }
+
+/* ======================================
+   JS STATE CLASSES
+====================================== */
+/* We must map the old JS class names to new styles */
+.state-Red #light-red { background: var(--red); box-shadow: 0 0 25px var(--red); }
+.state-Yellow #light-yellow { background: var(--yellow); box-shadow: 0 0 25px var(--yellow); }
+.state-Green #light-green { background: var(--green); box-shadow: 0 0 25px var(--green); }
+
+.state-ERROR #light-red, .state-ERROR #light-yellow, .state-ERROR #light-green {
+    animation: blink-error 0.5s step-end infinite;
+}
+@keyframes blink-error {
+    50% { opacity: 0.3; }
+}
+
+.cmd-MOVE { color: var(--green) !important; }
+.cmd-STOP { color: var(--red) !important; }
+.cmd-IDLE { color: var(--muted) !important; }
+
+.online { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.offline { background: var(--red); box-shadow: 0 0 8px var(--red); }
+
+/* ======================================
+   PARTICLES
+====================================== */
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: float-up linear infinite;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes float-up {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+}

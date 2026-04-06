@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalDetect — AI Traffic Priority</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-wrapper">
+        
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-logo">
+                <div class="logo-badge">🚦</div>
+                <div>
+                    <h1>Signal<span>Detect</span></h1>
+                </div>
+            </div>
+            <div class="system-status">
+                <div class="status-chip">
+                    <span class="dot dot-green"></span> System Online
+                </div>
+                <div class="status-chip">
+                    <span id="esp-conn-dot" class="dot offline"></span> ESP32: <span id="esp-conn-text">Checking...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN DASHBOARD -->
+        <main class="dashboard-grid">
+            
+            <!-- LEFT: MONITOR -->
+            <section class="monitor-card glass">
+                <div class="card-title">
+                    <span>🔴 Live Monitor Feed</span>
+                    <span id="camera-status" style="color: var(--green);">● Active</span>
+                </div>
+                <div class="video-container">
+                    <img id="videoStream" src="{{ url_for('video_feed') }}" alt="Traffic Feed" />
+                    <div class="hud-overlay">
+                        <div class="hud-corner c-tl"></div>
+                        <div class="hud-corner c-tr"></div>
+                        <div class="hud-corner c-bl"></div>
+                        <div class="hud-corner c-br"></div>
+                        <div class="scanline"></div>
+                    </div>
+                </div>
+                <div id="cam-status-badge" style="display:none; margin-top:1rem; padding:0.8rem; border-radius:8px; background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.3); color: var(--red); font-size: 0.85rem;"></div>
+            </section>
+
+            <!-- RIGHT: STATUS & CONTROLS -->
+            <aside class="side-panel">
+                
+                <!-- Signal Status Card -->
+                <div id="status-panel" class="card glass">
+                    <div class="card-title">🚥 Signal Analysis</div>
+                    <div class="signal-display">
+                        <div class="traffic-light">
+                            <div id="light-red" class="light light-red"></div>
+                            <div id="light-yellow" class="light light-yellow"></div>
+                            <div id="light-green" class="light light-green"></div>
+                        </div>
+                        <div class="signal-info">
+                            <h2 id="status-text">Detecting...</h2>
+                            <p id="signal-sub">Initializing computer vision...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ambulance Alert Card -->
+                <div id="ambulance-panel" class="card ambulance-card glass">
+                    <div class="card-title">🚨 Priority Alert</div>
+                    <div class="alert-content">
+                        <div id="amb-indicator" class="alert-icon">
+                            <span id="amb-icon">🔇</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 id="amb-label" style="font-size: 1.1rem; color: var(--text-h);">Standby</h3>
+                            <p id="amb-sublabel" style="font-size: 0.85rem; color: var(--muted); margin-top: 4px;">Monitoring audio frequencies...</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1.2rem; align-items: center;">
+                        <div class="status-chip" id="mic-badge" style="background: rgba(0,0,0,0.2);">
+                            <span id="mic-dot" class="dot"></span>
+                            <span id="mic-status-text" style="font-size: 0.75rem;">Mic: Initializing</span>
+                        </div>
+                        <button id="demo-toggle-btn" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">🚑 Demo Siren</button>
+                    </div>
+                </div>
+
+                <!-- Hardware Control Card -->
+                <div id="esp-panel" class="card glass">
+                    <div class="card-title">⚡ Hardware Overrides</div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <span style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase;">Active Command</span>
+                            <div id="esp-command-badge" class="esp-command-badge" style="font-size: 1.5rem; font-weight: 800; letter-spacing: 1px;">IDLE</div>
+                        </div>
+                        <button id="toggle-audio-btn" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">Voice OFF</button>
+                    </div>
+
+                    <div class="hw-row">
+                        <div id="hw-led" class="hw-item">💡 LED</div>
+                        <div id="hw-motor" class="hw-item">⚙️ MOTOR</div>
+                        <div id="hw-buzzer" class="hw-item">🔔 BUZZER</div>
+                    </div>
+
+                    <div class="control-grid">
+                        <button id="force-move-btn" class="btn btn-move">MOVE</button>
+                        <button id="force-stop-btn" class="btn btn-stop">STOP</button>
+                        <button id="force-idle-btn" class="btn">IDLE</button>
+                    </div>
+                </div>
+
+                <!-- Settings Card -->
+                <div class="card glass">
+                    <div class="card-title">⚙️ Configuration</div>
+                    <div class="settings-section">
+                        <div class="input-group">
+                            <label>Camera Endpoint</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="camera-ip" placeholder="http://192.168.1.x:8080" style="flex: 1; font-size: 0.8rem; padding: 0.5rem;">
+                                <button id="update-cam-btn" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Connect</button>
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label>ESP32 IP</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="esp32-ip" placeholder="192.168.1.x" style="flex: 1; font-size: 0.8rem; padding: 0.5rem;">
+                                <button id="set-esp-btn" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Set IP</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+        </main>
+
+        <!-- INFO BAR -->
+        <footer class="info-bar">
+            <div class="info-box glass">
+                <span>🔴 Stop: ESP activates Red LED + Buzzer</span>
+            </div>
+            <div class="info-box glass">
+                <span>🟢 Move: ESP activates Green LED + Motor</span>
+            </div>
+            <div class="info-box glass">
+                <span>🚑 Siren: Priority over signal detections</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Background particles for depth -->
+    <div id="particles" style="position: fixed; inset: 0; pointer-events: none; z-index: -1;"></div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
